@@ -61,8 +61,6 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
-
-
             }
         });
 
@@ -71,8 +69,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-
-                Toast.makeText(MainActivity.this, "You clicked me 2", Toast.LENGTH_SHORT).show();
+                weatherDataService.getCityForecastByID("44418");
             }
         });
 
