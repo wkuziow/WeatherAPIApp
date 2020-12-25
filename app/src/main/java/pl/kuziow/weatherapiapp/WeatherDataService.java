@@ -69,9 +69,15 @@ public class WeatherDataService {
         //  return cityID;
     }
 
-    public void getCityForecastByID(String cityID) {
+    public interface ForecastByIDResponse {
+        void onError(String message);
 
-        List<WeatherReportModel> report = new ArrayList<>();
+        void onResponse(List<WeatherReportModel> weatherReportModel);
+    }
+
+    public void getCityForecastByID(String cityID, ForecastByIDResponse forecastByIDResponse) {
+
+        List<WeatherReportModel> weatherReportModels = new ArrayList<>();
 
         String url = QUERY_FOR_CITY_WEATHER_BY_ID + cityID;
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -79,7 +85,33 @@ public class WeatherDataService {
 
             @Override
             public void onResponse(JSONObject response) {
-                Toast.makeText(context, response.toString(), Toast.LENGTH_SHORT).show();
+                // Toast.makeText(context, response.toString(), Toast.LENGTH_SHORT).show();
+
+                try {
+                    JSONArray consolidated_weather_list = response.getJSONArray("consolidated_weather");
+
+
+                    for (int i = 0; i < consolidated_weather_list.length(); i++) {
+                        WeatherReportModel oneDay = new WeatherReportModel();
+
+
+                        JSONObject firstDayFromApi = (JSONObject) consolidated_weather_list.get(i);
+                        oneDay.setId(firstDayFromApi.getInt("id"));
+                        oneDay.setApplicable_date(firstDayFromApi.getString("applicable_date"));
+                        oneDay.setWeather_state_name(firstDayFromApi.getString("weather_state_name"));
+
+                        oneDay.setMin_temp(firstDayFromApi.getLong("min_temp"));
+                        oneDay.setMax_temp(firstDayFromApi.getLong("max_temp"));
+                        oneDay.setThe_temp(firstDayFromApi.getLong("the_temp"));
+
+
+                        weatherReportModels.add(oneDay);
+                    }
+                    forecastByIDResponse.onResponse(weatherReportModels);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
             }
         }, new Response.ErrorListener() {
@@ -90,10 +122,37 @@ public class WeatherDataService {
         });
         MySingleton.getInstance(context).addToRequestQueue(request);
 
+    }
 
-//    public List<WeatherReportModel> getCityForecastByName(String cityName) {
-//
-//
-//    }
+    public interface GetCityForecastByCityNameCallback {
+        void onError(String message);
+
+        void onResponse(List<WeatherReportModel> weatherReportModes);
+    }
+
+    public void getCityForecastByName(String cityName, GetCityForecastByCityNameCallback getCityForecastByCityNameCallback) {
+        getCityID(cityName, new VolleyResponseListener() {
+            @Override
+            public void onError(String message) {
+
+            }
+
+            @Override
+            public void onResponse(String cityID) {
+                getCityForecastByID(cityID, new ForecastByIDResponse() {
+                    @Override
+                    public void onError(String message) {
+
+                    }
+
+                    @Override
+                    public void onResponse(List<WeatherReportModel> weatherReportModels) {
+                        getCityForecastByCityNameCallback.onResponse(weatherReportModels);
+                    }
+                });
+
+            }
+        });
+
     }
 }

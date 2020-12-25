@@ -18,6 +18,9 @@ public class WeatherReportModel {
     private float visibility;
     private int predictability;
 
+    public WeatherReportModel() {
+    }
+
     public WeatherReportModel(int id, String weather_state_name, String weather_state_abbr, String wind_direction_compass, String created, String applicable_date, float min_temp, float max_temp, float the_temp, float wind_speed, float wind_direction, int air_pressure, int humidity, float visibility, int predictability) {
         this.id = id;
         this.weather_state_name = weather_state_name;
@@ -38,23 +41,10 @@ public class WeatherReportModel {
 
     @Override
     public String toString() {
-        return "WeatherReportModel{" +
-                "id=" + id +
-                ", weather_state_name='" + weather_state_name + '\'' +
-                ", weather_state_abbr='" + weather_state_abbr + '\'' +
-                ", wind_direction_compass='" + wind_direction_compass + '\'' +
-                ", created='" + created + '\'' +
-                ", applicable_date='" + applicable_date + '\'' +
-                ", min_temp=" + min_temp +
-                ", max_temp=" + max_temp +
-                ", the_temp=" + the_temp +
-                ", wind_speed=" + wind_speed +
-                ", wind_direction=" + wind_direction +
-                ", air_pressure=" + air_pressure +
-                ", humidity=" + humidity +
-                ", visibility=" + visibility +
-                ", predictability=" + predictability +
-                '}';
+        return weather_state_name + " Date: " + applicable_date  +
+                " Lo: " + min_temp +
+                " Hi: " + max_temp +
+                " Temp: " + the_temp;
     }
 
     public int getId() {
